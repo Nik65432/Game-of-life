@@ -3,7 +3,10 @@ import sys
 from time import sleep
 
 pygame.init()
-screen = pygame.display.set_mode((400,400))
+width = 500
+hight = 500
+prop = 10
+screen = pygame.display.set_mode((width,hight))
 screen.fill((0,0,0))
 pygame.display.set_caption("Game of life")
 
@@ -14,10 +17,11 @@ class Cube():
 		self.live = live
 	def draw_cube(self):
 		if self.live == True:
-			pygame.draw.rect(screen,'gray',pygame.Rect(self.x*20,self.y*20,20,20),2)
-			pygame.draw.rect(screen,'white',pygame.Rect(self.x*20+1,self.y*20+1,18,18))
+			pygame.draw.rect(screen,'gray',pygame.Rect(self.x*prop,self.y*prop,prop,prop),2)
+			pygame.draw.rect(screen,'white',pygame.Rect(self.x*prop+1,self.y*prop+1,prop-2,prop-2))
 		else:
-			pygame.draw.rect(screen,'gray',pygame.Rect(self.x*20,self.y*20,20,20))
+			pygame.draw.rect(screen,'black',pygame.Rect(self.x*prop,self.y*prop,prop,prop))
+
 cubes = {}
 
 def around(c,border=False):
@@ -43,20 +47,19 @@ def around(c,border=False):
 
 def cicle():
 	sleep(0.1)
+	cube = {}
+	for k,v in cubes.items():
+		status = around(v)
+		if ((status <= 1) or (status >= 4)) and v.live:
+			cube[k] = False
+		elif (status == 3) and (v.live == False):
+			cube[k] = True
+	for k,v in cube.items():
+		if v:
+			around(cubes[k],True)
+		cubes[k].live = v
 	for i in cubes.values():
-		status = around(i)
-		print(status)
-		if ((status <= 1) or (status >= 4)) and i.live:
-			i.live = False
-			i.draw_cube()
-		elif (status == 3) and (i.live == False):
-			i.live = True
-			i.draw_cube()
-	cube = cubes.copy()
-	for j in cube.values():
-		if j.live:
-			around(j,True)
-
+		i.draw_cube()
 
 pause = True
 while True:
@@ -64,8 +67,8 @@ while True:
 		if event.type == pygame.QUIT:
 			sys.exit()
 		elif event.type == pygame.MOUSEBUTTONDOWN:
-			x = int(pygame.mouse.get_pos()[0]//20)
-			y = int(pygame.mouse.get_pos()[1]//20)
+			x = int(pygame.mouse.get_pos()[0]//prop)
+			y = int(pygame.mouse.get_pos()[1]//prop)
 			p = (x,y)
 			if event.button == 1:
 				if cubes.get(p,False) and cubes[p].live:
@@ -86,5 +89,4 @@ while True:
 					pause = True
 	if pause == False:
 		cicle()
-
 	pygame.display.update()
