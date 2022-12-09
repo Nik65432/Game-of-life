@@ -6,11 +6,11 @@ pygame.init()
 width = 500
 hight = 500
 prop = 10
-screen = pygame.display.set_mode((width,hight))
+screen = pygame.display.set_mode((width,hight),pygame.RESIZABLE)
 screen.fill((0,0,0))
 pygame.display.set_caption("Game of life")
 
-class Cube():
+class Cell():
 	def __init__(self,x,y,live):
 		self.x = x
 		self.y = y
@@ -22,7 +22,7 @@ class Cube():
 		else:
 			pygame.draw.rect(screen,'black',pygame.Rect(self.x*prop,self.y*prop,prop,prop))
 
-cubes = {}
+cells = {}
 
 def around(c,border=False):
 	count = 0
@@ -38,27 +38,27 @@ def around(c,border=False):
 	]
 	for i in around_list:
 		if border:
-			if cubes.get(i,False) == False:
-				cubes[i] = Cube(i[0],i[1],False)
-				cubes[i].draw_cube()
-		elif (cubes.get(i,False) != False) and cubes[i].live:
+			if cells.get(i,False) == False:
+				cells[i] = Cell(i[0],i[1],False)
+				cells[i].draw_cube()
+		elif (cells.get(i,False) != False) and cells[i].live:
 			count += 1
 	return count
 
 def cicle():
 	sleep(0.1)
-	cube = {}
-	for k,v in cubes.items():
+	Cell = {}
+	for k,v in cells.items():
 		status = around(v)
 		if ((status <= 1) or (status >= 4)) and v.live:
-			cube[k] = False
+			Cell[k] = False
 		elif (status == 3) and (v.live == False):
-			cube[k] = True
-	for k,v in cube.items():
+			Cell[k] = True
+	for k,v in Cell.items():
 		if v:
-			around(cubes[k],True)
-		cubes[k].live = v
-	for i in cubes.values():
+			around(cells[k],True)
+		cells[k].live = v
+	for i in cells.values():
 		i.draw_cube()
 
 pause = True
@@ -71,17 +71,17 @@ while True:
 			y = int(pygame.mouse.get_pos()[1]//prop)
 			p = (x,y)
 			if event.button == 1:
-				if cubes.get(p,False) and cubes[p].live:
-					cubes[p].live = False
-					cubes[p].draw_cube()
-				elif cubes.get(p,False) and cubes[p].live == False:
-					cubes[p].live = True
-					cubes[p].draw_cube()
-					around(cubes[p],True)
-				elif cubes.get(p,False) == False:
-					cubes[p] = Cube(x,y,True)
-					cubes[p].draw_cube()
-					around(cubes[p],True)
+				if cells.get(p,False) and cells[p].live:
+					cells[p].live = False
+					cells[p].draw_cube()
+				elif cells.get(p,False) and cells[p].live == False:
+					cells[p].live = True
+					cells[p].draw_cube()
+					around(cells[p],True)
+				elif cells.get(p,False) == False:
+					cells[p] = Cell(x,y,True)
+					cells[p].draw_cube()
+					around(cells[p],True)
 			elif event.button == 3:
 				if pause:
 					pause = False
